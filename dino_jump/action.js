@@ -1,4 +1,4 @@
-import Imput, { RIGHT, UP } from "../Imput.js";
+import Imput, { RIGHT, UP } from "./Imput.js";
 
 let isJumpPressed = false;
 let isJumpInProcess = false;
@@ -17,7 +17,7 @@ function onJumpReleased() {
   isJumpPressed = false;
 }
 
-export function jump(delta, dino) {
+export function action(delta, dino) {
   if (isJumpPressed) isJumpInProcess = true;
 
   if (isJumpInProcess && !isFalling) {

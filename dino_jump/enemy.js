@@ -1,34 +1,39 @@
-import VectorTo from "../VectorTo.js";
-import { gridCells } from "../gridCells.js";
-import { moveTowards } from "../moveTowards.js";
+import VectorTo from "../src/VectorTo.js";
+import { gridCells } from "../src/gridCells.js";
+import { moveTowards } from "../src/moveTowards.js";
 
-const ENEMY_INTERVAL_MIN = 2000;
-const ENEMY_INTERVAL_MAX = 2500;
+let isGameOver = false;
 let ENEMY_NEXT_INTERVAL = 0;
+const DIFFICUL = 600;
+const ENEMY_INTERVAL_MIN = 2000;
+const ENEMY_INTERVAL_MAX = 3000;
 const destinationPos = new VectorTo(gridCells(-2), gridCells(8));
 
 function getRamdomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function setNextEnemyTime() {
-  const num = getRamdomNumber(ENEMY_INTERVAL_MIN, ENEMY_INTERVAL_MAX);
+function setNextEnemyTime(speed) {
+  const num = getRamdomNumber(
+    ENEMY_INTERVAL_MIN - speed * DIFFICUL,
+    ENEMY_INTERVAL_MAX - speed * DIFFICUL
+  );
   ENEMY_NEXT_INTERVAL = num;
 }
 
-function drawEnemy(ctx, enemies, detta) {
+function drawEnemies(ctx, enemies, detta, speed) {
   enemies.forEach((enemy) => {
-    const enemyOfSet = new VectorTo(8, 0);
+    const enemyOfSet = new VectorTo(8, -22);
     const enemyPosX = enemy.position.x + enemyOfSet.x;
     const enemyPosY = enemy.position.y + enemyOfSet.y;
 
     if (enemy.position.x > destinationPos.x) {
-      moveTowards(enemy, destinationPos, 2);
+      enemy.position.x -= 1.5 + speed;
       enemy.drawImage(ctx, enemyPosX, enemyPosY);
     } else {
       if (ENEMY_NEXT_INTERVAL < 0) {
-        enemy.position.x = 300;
-        setNextEnemyTime();
+        enemy.position.x = gridCells(18);
+        setNextEnemyTime(speed);
       }
       ENEMY_NEXT_INTERVAL -= detta;
     }
@@ -36,4 +41,18 @@ function drawEnemy(ctx, enemies, detta) {
   });
 }
 
-export { getRamdomNumber, drawEnemy };
+function updateEnemies(dino, enemies) {
+  return enemies.some((enemy) => {
+    const adjustBy = 1.6;
+    if (
+      dino.position.x < enemy.position.x + enemy.frameSize.x / adjustBy &&
+      dino.position.x + dino.frameSize.x / adjustBy > enemy.position.x &&
+      dino.position.y < enemy.position.y + enemy.frameSize.y / adjustBy &&
+      dino.position.y + dino.frameSize.y / adjustBy > enemy.position.y
+    ) {
+      return true;
+    } else return false;
+  });
+}
+
+export { getRamdomNumber, drawEnemies, updateEnemies };

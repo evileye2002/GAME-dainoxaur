@@ -1,4 +1,4 @@
-import Process from "./Process.js";
+import Process from "../src/Process.js";
 
 export const UP = "UP";
 export const DOWN = "DOWN";
@@ -8,11 +8,11 @@ export const RIGHT = "RIGHT";
 const defaultKeybind = {
   JumpKey: "ArrowUp",
 };
-const process = new Process("dino_jump");
-if (process.getSaveFile() == null) {
-  process.save(defaultKeybind);
-}
-const keybind = process.getSaveFile();
+// const process = new Process("dino_jump");
+// if (process.getSaveFile() == null) {
+//   process.save(defaultKeybind);
+// }
+// const keybind = process.getSaveFile();
 
 export default class Imput {
   constructor(onPressed, onReleased) {
@@ -21,15 +21,22 @@ export default class Imput {
     this.heldDirections = [];
 
     document.addEventListener("keydown", (e) => {
-      if (e.code === keybind.JumpKey) {
+      if (e.code === defaultKeybind.JumpKey) {
         this.onKeyPressed(UP);
       }
     });
 
     document.addEventListener("keyup", (e) => {
-      if (e.code === keybind.JumpKey) {
+      if (e.code === defaultKeybind.JumpKey) {
         this.onKeyReleased(UP);
       }
+    });
+
+    document.addEventListener("touchstart", () => {
+      this.onKeyPressed(UP);
+    });
+    document.addEventListener("touchend", () => {
+      this.onKeyReleased(UP);
     });
   }
 

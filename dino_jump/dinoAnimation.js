@@ -32,6 +32,7 @@ function stopAnimations(rootFrame = 0) {
 }
 
 export const MOVE_RIGHT = animations(0);
+export const DEAD = stopAnimations(24);
 export const MOVE_LEFT = animations(11, 6, false);
 export const JUMP = stopAnimations(20);
 export const FALLING = stopAnimations(18);
