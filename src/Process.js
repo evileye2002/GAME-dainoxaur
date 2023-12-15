@@ -1,6 +1,8 @@
 export default class Process {
-  constructor(key) {
+  constructor(key, defaultSave = {}) {
     this.key = key;
+    this.defaultSave = defaultSave;
+    this.setSaveFile();
   }
   save(data) {
     window.localStorage.setItem(this.key, JSON.stringify(data));
@@ -9,5 +11,11 @@ export default class Process {
   getSaveFile() {
     const saveFile = window.localStorage.getItem(this.key);
     return saveFile ? JSON.parse(saveFile) : null;
+  }
+
+  setSaveFile() {
+    if (this.getSaveFile() === null) {
+      this.save(this.defaultSave);
+    }
   }
 }

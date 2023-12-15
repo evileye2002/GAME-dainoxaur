@@ -1,10 +1,11 @@
+import { gridCells } from "../src/gridCells.js";
 import Imput, { RIGHT, UP } from "./Imput.js";
 
 let isJumpPressed = false;
 let isJumpInProcess = false;
 let isFalling = false;
-let JUMP_HEIGHT = 80;
-let GROUND = 128;
+let JUMP_HEIGHT = gridCells(6);
+let GROUND = gridCells(9);
 let JUMP_SPEED = 4;
 let GRAVITY = 3;
 let FLOAT_TIME = 105;

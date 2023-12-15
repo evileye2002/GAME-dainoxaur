@@ -1,6 +1,7 @@
 export default class FrameIndexPattern {
   constructor(animationConfig) {
     this.currentTime = 0;
+    this.isPlay = true;
     this.animationConfig = animationConfig;
     this.duration = animationConfig.duration ?? 500;
   }
@@ -15,9 +16,15 @@ export default class FrameIndexPattern {
   }
 
   step(delta) {
-    this.currentTime += delta;
-    if (this.currentTime >= this.duration) {
-      this.currentTime = 0;
+    if (this.isPlay) {
+      this.currentTime += delta;
+      if (this.currentTime >= this.duration) {
+        this.currentTime = 0;
+      }
     }
+  }
+
+  stop() {
+    this.isPlay = false;
   }
 }
