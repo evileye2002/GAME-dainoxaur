@@ -28,11 +28,11 @@ function drawEnemies(ctx, enemies, detta, speed) {
     const enemyPosY = enemy.position.y + enemyOfSet.y;
 
     if (enemy.position.x > destinationPos.x) {
-      enemy.position.x -= 1.5 + speed;
+      enemy.position.x -= 2 + speed;
       enemy.drawImage(ctx, enemyPosX, enemyPosY);
     } else {
       if (ENEMY_NEXT_INTERVAL < 0) {
-        enemy.position.x = gridCells(18);
+        enemy.position.x = gridCells(32);
         setNextEnemyTime(speed);
       }
       ENEMY_NEXT_INTERVAL -= detta;

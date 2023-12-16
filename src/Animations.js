@@ -20,4 +20,8 @@ export default class Animations {
   step(delta) {
     this.patterns[this.activeKey].step(delta);
   }
+
+  stop() {
+    this.patterns[this.activeKey].stop();
+  }
 }

@@ -43,6 +43,10 @@ export default class Sprite {
     this.frame = this.animation.frame;
   }
 
+  stop() {
+    this.animation.stop();
+  }
+
   drawImage(ctx, x, y) {
     if (!this.resource.isLoaded) return;
 

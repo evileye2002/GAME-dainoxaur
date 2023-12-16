@@ -2,6 +2,7 @@ import Animations from "../src/Animations.js";
 import FrameIndexPattern from "../src/FrameIndexPattern.js";
 import GameLoop from "../src/GameLoop.js";
 import { gridCells } from "../src/gridCells.js";
+import Process from "../src/Process.js";
 import Resources from "../src/Resources.js";
 import Sprite from "../src/Sprites.js";
 import VectorTo from "../src/VectorTo.js";
@@ -12,6 +13,8 @@ import {
   JUMP,
   MOVE_LEFT,
   MOVE_RIGHT,
+  PLAY_HOLD,
+  PLAY_IDLE,
   STANDING,
 } from "./dinoAnimation.js";
 import { drawEnemies, updateEnemies } from "./enemy.js";
@@ -33,10 +36,100 @@ const resources = {
   grass: "/games/dino_jump/sprites/grass.png",
   ground: "/games/dino_jump/sprites/ground.png",
   bush: "/games/dino_jump/sprites/bush.png",
+  icons: "/games/dino_jump/sprites/GUI/IconButtons.png",
+  textButtons: "/games/dino_jump/sprites/GUI/TextButtons.png",
+  boxs: "/games/dino_jump/sprites/GUI/Boxs.png",
+  gameOverTitle: "/games/dino_jump/sprites/GUI/GameOver.png",
 };
 const resourceClass = new Resources(resources);
+//#endregion
 
-//canvas.width = 600;
+const process = new Process("dino_jump", {
+  highScore: 0,
+  jumpKey: "ArrowUp",
+  isDrawBackground: true,
+});
+let saveFile = process.getSaveFile();
+HIGH_SCORE = saveFile.highScore;
+
+//#region GUI
+const score = document.getElementById("score");
+
+const menuStartCanvas = document.getElementById("canvas-start");
+const ctxMenuStart = menuStartCanvas.getContext("2d");
+const menuStart = new Sprite({
+  resource: resourceClass.images.textButtons,
+  frameSize: new VectorTo(64, 32),
+  rows: 3,
+  columns: 3,
+  frame: 7,
+  animation: new Animations({
+    playIdle: new FrameIndexPattern(PLAY_IDLE),
+    playHold: new FrameIndexPattern(PLAY_HOLD),
+  }),
+});
+menuStartCanvas.addEventListener("mousedown", () => {
+  menuStart.animation.play("playHold");
+});
+menuStartCanvas.addEventListener("mouseup", (e) => {
+  menuStart.frame = 1;
+  reset(e);
+});
+
+const divGameOver = document.querySelector(".menu.menu-game-over");
+const menuGameOverCanvas = document.getElementById("canvas-game-over");
+const ctxMenuGameOver = menuGameOverCanvas.getContext("2d");
+const menuGameOver = new Sprite({
+  resource: resourceClass.images.boxs,
+  frameSize: new VectorTo(194, 144),
+  rows: 1,
+  columns: 2,
+  frame: 0,
+});
+
+const txtGameOverCanvas = document.getElementById("canvas-game-over-title");
+const ctxTxtGameOver = txtGameOverCanvas.getContext("2d");
+const txtGameOver = new Sprite({
+  resource: resourceClass.images.gameOverTitle,
+  frameSize: new VectorTo(194, 144),
+  rows: 1,
+  columns: 2,
+  frame: 0,
+});
+
+const btnRestartCanvas = document.getElementById("canvas-restart");
+const ctxBtnRestart = btnRestartCanvas.getContext("2d");
+const btnRestart = new Sprite({
+  resource: resourceClass.images.icons,
+  frameSize: new VectorTo(32, 32),
+  rows: 10,
+  columns: 10,
+  frame: 98,
+});
+
+btnRestartCanvas.addEventListener("mousedown", () => {
+  btnRestart.frame = 99;
+});
+btnRestartCanvas.addEventListener("mouseup", (e) => {
+  btnRestart.frame = 98;
+  reset(e);
+});
+
+const btnSettingCanvas = document.getElementById("canvas-setting");
+const ctxBtnSetting = btnSettingCanvas.getContext("2d");
+const btnSetting = new Sprite({
+  resource: resourceClass.images.icons,
+  frameSize: new VectorTo(32, 32),
+  rows: 10,
+  columns: 10,
+  frame: 18,
+});
+btnSettingCanvas.addEventListener("mousedown", () => {
+  btnSetting.frame = 19;
+});
+btnSettingCanvas.addEventListener("mouseup", () => {
+  btnSetting.frame = 18;
+});
 //#endregion
 
 //#region Background
@@ -49,19 +142,19 @@ const sky = new Sprite({
 const grass = new Sprite({
   resource: resourceClass.images.grass,
   frameSize: new VectorTo(600, 300),
-  position: new VectorTo(0, -12),
+  position: new VectorTo(0, -8),
   scale: 0.6,
 });
 const ground = new Sprite({
   resource: resourceClass.images.ground,
   frameSize: new VectorTo(600, 300),
-  position: new VectorTo(0, 38),
+  position: new VectorTo(0, 50),
   scale: 0.4,
 });
 const bush = new Sprite({
   resource: resourceClass.images.bush,
   frameSize: new VectorTo(600, 300),
-  position: new VectorTo(0, 40),
+  position: new VectorTo(0, 60),
   scale: 0.4,
 });
 //#endregion
@@ -73,7 +166,7 @@ const dino = new Sprite({
   rows: 7,
   columns: 6,
   frame: 0,
-  position: new VectorTo(gridCells(0), gridCells(8)),
+  position: new VectorTo(gridCells(0), gridCells(9)),
   animation: new Animations({
     moveRight: new FrameIndexPattern(MOVE_RIGHT),
     jump: new FrameIndexPattern(JUMP),
@@ -90,15 +183,20 @@ const enemies = [];
 const draw = (delta) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  //Sky
-  sky.drawImage(ctx, sky.position.x, sky.position.y);
-  sky.drawImage(ctx, sky.position.x + 340, sky.position.y);
-  sky.drawImage(ctx, sky.position.x + 680, sky.position.y);
+  //Menu
+  menuStart.drawImage(ctxMenuStart, 0, 0);
 
-  //Grass
-  grass.drawImage(ctx, grass.position.x, grass.position.y);
-  grass.drawImage(ctx, grass.position.x + 346, grass.position.y);
-  grass.drawImage(ctx, grass.position.x + 692, grass.position.y);
+  if (saveFile.isDrawBackground) {
+    //Sky
+    sky.drawImage(ctx, sky.position.x, sky.position.y);
+    sky.drawImage(ctx, sky.position.x + 340, sky.position.y);
+    sky.drawImage(ctx, sky.position.x + 680, sky.position.y);
+
+    //Grass
+    grass.drawImage(ctx, grass.position.x, grass.position.y);
+    grass.drawImage(ctx, grass.position.x + 346, grass.position.y);
+    grass.drawImage(ctx, grass.position.x + 692, grass.position.y);
+  }
 
   //Ground
   ground.drawImage(ctx, ground.position.x, ground.position.y);
@@ -113,6 +211,7 @@ const draw = (delta) => {
 
   if (!isGameOver && !isWatingToStart) {
     drawEnemies(ctx, enemies, delta, GAME_SPEED);
+    menuStartCanvas.classList.add("invisible");
   }
 
   //Bush
@@ -120,10 +219,12 @@ const draw = (delta) => {
   bush.drawImage(ctx, bush.position.x + 230, bush.position.y);
   bush.drawImage(ctx, bush.position.x + 460, bush.position.y);
 
-  if (isGameOver) {
-    // ctx.font = "40px Verdana";
-    // ctx.fillStyle = "gray";
-    // ctx.fillText("Game Over", canvas.width / 4.5, canvas.height / 2);
+  if (isGameOver || isWatingToStart) {
+    btnSetting.drawImage(ctxBtnSetting, 0, 0);
+    btnRestart.drawImage(ctxBtnRestart, 0, 0);
+    btnSettingCanvas.classList.remove("invisible");
+  } else {
+    btnSettingCanvas.classList.add("invisible");
   }
 };
 
@@ -133,9 +234,13 @@ const update = (delta) => {
 
     setReset();
   }
-  if (isGameOver || isWatingToStart) return;
+  if (isGameOver || isWatingToStart) {
+    menuStart.step(delta);
+    return;
+  }
 
   SCORE += delta * 0.01;
+  score.textContent = String(Math.floor(SCORE)).padStart(4, "0");
   setGameSpeed();
 
   //Sky
@@ -151,25 +256,37 @@ const update = (delta) => {
   }
 
   //Ground
-  ground.position.x -= 1.5 + GAME_SPEED;
+  ground.position.x -= 2 + GAME_SPEED;
   if (ground.position.x < -230) {
     ground.position.x = ground.position.x + 230;
   }
 
   //Bush
-  bush.position.x -= 1.5 + GAME_SPEED;
+  bush.position.x -= 2 + GAME_SPEED;
   if (bush.position.x < -230) {
     bush.position.x = bush.position.x + 230;
   }
 
   isGameOver = updateEnemies(dino, enemies);
+  if (isGameOver) {
+    //Update high score
+    if (Math.floor(SCORE) > HIGH_SCORE) {
+      saveFile.highScore = Math.floor(SCORE);
+      process.save(saveFile);
+    }
+
+    menuGameOver.drawImage(ctxMenuGameOver, 0, 0);
+    menuGameOverCanvas.classList.remove("invisible");
+    divGameOver.classList.remove("invisible");
+    txtGameOver.drawImage(ctxTxtGameOver, 0, 0);
+  }
+
   action(delta, dino, dinoDestinationPos);
   dino.step(delta);
 };
 
 const gameLoop = new GameLoop(update, draw);
 gameLoop.start();
-//#endregion
 
 function setReset() {
   if (!isSetReset) {
@@ -183,7 +300,7 @@ function setReset() {
 }
 
 function reset(e) {
-  if (e.type !== "touchstart" && e.code !== "ArrowUp") {
+  if (e.type !== "touchstart" && e.type !== "mouseup" && e.code !== "ArrowUp") {
     return;
   }
   window.removeEventListener("keydown", reset);
@@ -195,8 +312,10 @@ function reset(e) {
   SCORE = 0;
   GAME_SPEED = 0;
   enemies.splice(0, enemies.length);
+  // menuGameOverCanvas.classList.add("invisible");
+  divGameOver.classList.add("invisible");
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     enemies.push(
       new Sprite({
         resource: resourceClass.images.enemy_left,
@@ -204,7 +323,7 @@ function reset(e) {
         rows: 7,
         columns: 6,
         frame: 0,
-        position: new VectorTo(gridCells(18), gridCells(8)),
+        position: new VectorTo(gridCells(22), gridCells(9)),
         animation: new Animations({
           moveLeft: new FrameIndexPattern(MOVE_LEFT),
           standing: new FrameIndexPattern(STANDING),
@@ -218,27 +337,20 @@ function reset(e) {
 function setGameSpeed() {
   if (500 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 1;
-    console.log(GAME_SPEED);
   }
   if (2000 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 2;
-    console.log(GAME_SPEED);
   }
 
   if (3500 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 3;
-    console.log(GAME_SPEED);
   }
 
   if (5000 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 4;
-    console.log(GAME_SPEED);
-  }
-  if (6500 / Math.floor(SCORE) == 1) {
-    GAME_SPEED = GAME_SPEED_INCREMENT * 5;
-    console.log(GAME_SPEED);
   }
 }
+//#endregion
 
 window.addEventListener("keydown", reset);
 window.addEventListener("touchstart", reset);
