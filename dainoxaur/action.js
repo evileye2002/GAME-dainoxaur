@@ -1,15 +1,19 @@
 import { gridCells } from "../src/gridCells.js";
-import Imput, { RIGHT, UP } from "./Imput.js";
+import Imput from "./Imput.js";
 
 let isJumpPressed = false;
 let isJumpInProcess = false;
 let isFalling = false;
-let JUMP_HEIGHT = gridCells(6);
-let GROUND = gridCells(9);
-let JUMP_SPEED = 4;
-let GRAVITY = 3;
 let FLOAT_TIME = 105;
 
+const config = {
+  JUMP_HEIGHT: gridCells(6),
+  GROUND: gridCells(9),
+  JUMP_SPEED: 4,
+  GRAVITY: 3,
+};
+
+const imput = new Imput(onJumpPressed, onJumpReleased);
 function onJumpPressed() {
   isJumpPressed = true;
 }
@@ -22,12 +26,12 @@ export function action(delta, dino, isMute) {
   if (isJumpPressed) isJumpInProcess = true;
 
   if (isJumpInProcess && !isFalling) {
-    if (dino.position.y > JUMP_HEIGHT) {
+    if (dino.position.y > config.JUMP_HEIGHT) {
       dino.animation.play("jump");
       if (!isMute) {
         dino.playSound("jump");
       }
-      dino.position.y -= JUMP_SPEED;
+      dino.position.y -= config.JUMP_SPEED;
     } else {
       if (FLOAT_TIME < 0) {
         dino.animation.play("falling");
@@ -38,8 +42,8 @@ export function action(delta, dino, isMute) {
       }
     }
   } else {
-    if (dino.position.y < GROUND) {
-      dino.position.y += GRAVITY;
+    if (dino.position.y < config.GROUND) {
+      dino.position.y += config.GRAVITY;
     } else {
       dino.animation.play("moveRight");
       isFalling = false;
@@ -47,5 +51,3 @@ export function action(delta, dino, isMute) {
     }
   }
 }
-
-const imput = new Imput(onJumpPressed, onJumpReleased);

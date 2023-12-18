@@ -18,6 +18,7 @@ import {
   PLAY_IDLE,
   STANDING,
 } from "./dinoAnimation.js";
+import ObjectConfig from "./ObjectConfig.js";
 
 //#region Fields
 let isGameOver = false;
@@ -56,21 +57,19 @@ const resourceClass = new Resources(resources.images, resources.sounds);
 //#endregion
 
 const process = new Process("dino_jump", {
-  version: "1.0.1",
+  version: "1.0.2",
   highScore: 0,
   jumpKey: "ArrowUp",
-  isDrawBackground: true,
+  isDrawBackground: false,
   isMute: false,
 });
-let saveFile = process.getSaveFile();
+export let saveFile = process.getSaveFile();
 HIGH_SCORE = saveFile.highScore;
 
 //#region GUI
 const score = document.getElementById("score");
 
-const menuStartCanvas = document.getElementById("canvas-start");
-const ctxMenuStart = menuStartCanvas.getContext("2d");
-const menuStart = new Sprite({
+const menuStart = new ObjectConfig("canvas-start", {
   resource: resourceClass.images.textButtons,
   frameSize: new VectorTo(64, 32),
   rows: 3,
@@ -81,11 +80,11 @@ const menuStart = new Sprite({
     playHold: new FrameIndexPattern(PLAY_HOLD),
   }),
 });
-menuStartCanvas.addEventListener("mousedown", () => {
-  menuStart.animation.play("playHold");
+menuStart.canvas.addEventListener("mousedown", () => {
+  menuStart.sprite.animation.play("playHold");
 });
-menuStartCanvas.addEventListener("mouseup", (e) => {
-  menuStart.frame = 1;
+menuStart.canvas.addEventListener("mouseup", (e) => {
+  menuStart.sprite.frame = 1;
   if (!saveFile.isMute) {
     resourceClass.sounds.tap.sound.play();
   }
@@ -94,24 +93,18 @@ menuStartCanvas.addEventListener("mouseup", (e) => {
 });
 
 const divGameOver = document.getElementById("divGameOver");
-const menuGameOverCanvas = document.getElementById("canvas-game-over");
-const ctxMenuGameOver = menuGameOverCanvas.getContext("2d");
-const menuGameOver = new Sprite({
+const menuGameOver = new ObjectConfig("canvas-game-over", {
   resource: resourceClass.images.boxs,
   frameSize: new VectorTo(194, 144),
 });
 
-const txtGameOverCanvas = document.getElementById("canvas-game-over-title");
-const ctxTxtGameOver = txtGameOverCanvas.getContext("2d");
-const txtGameOver = new Sprite({
+const txtGameOver = new ObjectConfig("canvas-game-over-title", {
   resource: resourceClass.images.gameOverTitle,
   frameSize: new VectorTo(194, 144),
 });
 
 const scoreSpan = document.getElementById("score-text");
-const scoreTextCanvas = document.getElementById("canvas-score");
-const ctxScoreText = scoreTextCanvas.getContext("2d");
-const scoreText = new Sprite({
+const scoreText = new ObjectConfig("canvas-score", {
   resource: resourceClass.images.scoreText,
   frameSize: new VectorTo(107, 29),
 });
@@ -220,7 +213,7 @@ const draw = (delta) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   //Menu
-  menuStart.drawImage(ctxMenuStart, 0, 0);
+  menuStart.sprite.drawImage(menuStart.ctx, 0, 0);
 
   if (saveFile.isDrawBackground) {
     //Sky
@@ -246,7 +239,7 @@ const draw = (delta) => {
   dino.drawImage(ctx, dinoPosX, dinoPosY);
 
   if (!isGameOver && !isWatingToStart) {
-    menuStartCanvas.classList.add("invisible");
+    menuStart.canvas.classList.add("invisible");
     drawEnemies(ctx, enemies, delta, GAME_SPEED);
   }
 
@@ -274,7 +267,7 @@ const update = (delta) => {
     setReset();
   }
   if (isGameOver || isWatingToStart) {
-    menuStart.step(delta);
+    menuStart.sprite.step(delta);
     return;
   }
 
@@ -315,10 +308,10 @@ const update = (delta) => {
       process.save(saveFile);
     }
     divGameOver.classList.remove("invisible");
-    menuGameOver.drawImage(ctxMenuGameOver, 0, 0);
-    menuGameOverCanvas.classList.remove("invisible");
-    txtGameOver.drawImage(ctxTxtGameOver, 0, 0);
-    scoreText.drawImage(ctxScoreText, 0, 0);
+    menuGameOver.sprite.drawImage(menuGameOver.ctx, 0, 0);
+    menuGameOver.canvas.classList.remove("invisible");
+    txtGameOver.sprite.drawImage(txtGameOver.ctx, 0, 0);
+    scoreText.sprite.drawImage(scoreText.ctx, 0, 0);
     highScoreText.drawImage(ctxHighScoreText, 0, 0);
 
     scoreSpan.textContent = String(Math.floor(SCORE));

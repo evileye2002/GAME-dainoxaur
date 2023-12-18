@@ -1,18 +1,9 @@
-import Process from "../src/Process.js";
+import { saveFile } from "./main.js";
 
 export const UP = "UP";
 export const DOWN = "DOWN";
 export const LEFT = "LEFT";
 export const RIGHT = "RIGHT";
-
-const defaultKeybind = {
-  JumpKey: "ArrowUp",
-};
-// const process = new Process("dino_jump");
-// if (process.getSaveFile() == null) {
-//   process.save(defaultKeybind);
-// }
-// const keybind = process.getSaveFile();
 
 export default class Imput {
   constructor(onPressed, onReleased) {
@@ -21,13 +12,13 @@ export default class Imput {
     this.heldDirections = [];
 
     document.addEventListener("keydown", (e) => {
-      if (e.code === defaultKeybind.JumpKey) {
+      if (e.code === saveFile.jumpKey) {
         this.onKeyPressed(UP);
       }
     });
 
     document.addEventListener("keyup", (e) => {
-      if (e.code === defaultKeybind.JumpKey) {
+      if (e.code === saveFile.jumpKey) {
         this.onKeyReleased(UP);
       }
     });
