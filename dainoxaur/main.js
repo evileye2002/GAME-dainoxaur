@@ -56,10 +56,10 @@ const resources = {
 const resourceClass = new Resources(resources.images, resources.sounds);
 //#endregion
 
-const process = new Process("dino_jump", {
-  version: "1.0.2",
+const process = new Process("dainoxaur", {
+  version: "1.0.3",
   highScore: 0,
-  jumpKey: "ArrowUp",
+  jumpKey: ["ArrowUp", "Space"],
   isDrawBackground: false,
   isMute: false,
 });
@@ -195,7 +195,7 @@ const dino = new Sprite({
   rows: 7,
   columns: 6,
   frame: 0,
-  position: new VectorTo(gridCells(0), gridCells(9)),
+  position: new VectorTo(gridCells(2), gridCells(9)),
   animation: new Animations({
     moveRight: new FrameIndexPattern(MOVE_RIGHT),
     jump: new FrameIndexPattern(JUMP),
@@ -337,11 +337,15 @@ function setReset() {
 }
 
 function reset(e) {
-  if (e.type !== "touchstart" && e.type !== "mouseup" && e.code !== "ArrowUp") {
+  if (
+    e.type !== "touchstart" &&
+    e.type !== "mouseup" &&
+    (e.code !== saveFile.jumpKey[0] || e.code !== saveFile.jumpKey[1])
+  ) {
     return;
   }
-  window.removeEventListener("keydown", reset);
-  window.removeEventListener("touchstart", reset);
+  // window.removeEventListener("keydown", reset);
+  // window.removeEventListener("touchstart", reset);
 
   isSetReset = false;
   isGameOver = false;
@@ -376,16 +380,16 @@ function setGameSpeed() {
   if (500 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 1;
   }
-  if (2000 / Math.floor(SCORE) == 1) {
+  if (1000 / Math.floor(SCORE) == 1) {
     GAME_SPEED = GAME_SPEED_INCREMENT * 2;
   }
 
-  if (3500 / Math.floor(SCORE) == 1) {
-    GAME_SPEED = GAME_SPEED_INCREMENT * 3;
+  if (1500 / Math.floor(SCORE) == 1) {
+    GAME_SPEED = GAME_SPEED_INCREMENT * 2.5;
   }
 
-  if (5000 / Math.floor(SCORE) == 1) {
-    GAME_SPEED = GAME_SPEED_INCREMENT * 4;
+  if (2000 / Math.floor(SCORE) == 1) {
+    GAME_SPEED = GAME_SPEED_INCREMENT * 3;
   }
 }
 //#endregion

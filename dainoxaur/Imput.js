@@ -12,13 +12,13 @@ export default class Imput {
     this.heldDirections = [];
 
     document.addEventListener("keydown", (e) => {
-      if (e.code === saveFile.jumpKey) {
+      if (e.code === saveFile.jumpKey[0] || e.code === saveFile.jumpKey[1]) {
         this.onKeyPressed(UP);
       }
     });
 
     document.addEventListener("keyup", (e) => {
-      if (e.code === saveFile.jumpKey) {
+      if (e.code === saveFile.jumpKey[0] || e.code === saveFile.jumpKey[1]) {
         this.onKeyReleased(UP);
       }
     });
