@@ -10,6 +10,7 @@ export default class Sprite {
     scale,
     animation,
     position,
+    sounds,
   }) {
     this.resource = resource;
     this.frameSize = frameSize ?? new VectorTo(16, 16);
@@ -20,6 +21,7 @@ export default class Sprite {
     this.scale = scale ?? 1;
     this.position = position ?? new VectorTo(0, 0);
     this.animation = animation ?? null;
+    this.sounds = sounds;
     this.buildFrameMap();
   }
 
@@ -72,5 +74,9 @@ export default class Sprite {
       frameSizeX * this.scale,
       frameSizeY * this.scale
     );
+  }
+
+  playSound(key) {
+    this.sounds[key].sound.play();
   }
 }

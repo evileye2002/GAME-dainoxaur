@@ -14,7 +14,10 @@ export default class Process {
   }
 
   setSaveFile() {
-    if (this.getSaveFile() === null) {
+    if (
+      this.getSaveFile() === null ||
+      this.getSaveFile().version !== this.defaultSave.version
+    ) {
       this.save(this.defaultSave);
     }
   }
