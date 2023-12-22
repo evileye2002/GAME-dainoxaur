@@ -11,4 +11,5 @@ A simple 2D side-scrolling game like Chrome Dinosaur but have more details and s
 
  - Dino Family [demiching](https://demching.itch.io/)
  - Background [craftpix](https://craftpix.net/freebies/free-summer-pixel-art-backgrounds/)
+ - Pixel UI pack 1 [bdragon1727](https://bdragon1727.itch.io/basic-pixel-gui-and-buttons-pack-1)
 
