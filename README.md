@@ -1,6 +1,6 @@
 ## About
 
-A simple 2D side-scrolling game like Chrome Dinosaur but have more details and some UIs
+A simple 2D game like Dinosaur Game but have more details.
 ## Preview
 
 ![enter image description here](https://hoangduongkhanh.id.vn/assets/imgs/projects/dainoxaur.png)
